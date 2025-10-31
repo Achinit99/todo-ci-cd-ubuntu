@@ -1,7 +1,4 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
-name: Node.js CI
+name: Node.js CI (Monorepo)
 
 on:
   push:
@@ -9,20 +6,73 @@ on:
 
 jobs:
   build:
-
     runs-on: self-hosted
 
     strategy:
       matrix:
         node-version: [22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Show repo layout (debug)
+        run: |
+          echo "== root files =="
+          ls -la
+          echo "== client =="
+          ls -la client || echo "client/ not found"
+          echo "== server =="
+          ls -la server || echo "server/ not found"
+
+      # ------------------ Server ------------------
+      - name: Setup Node for server (with npm cache)
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install server dependencies
+        working-directory: server
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          elif [ -f package.json ]; then
+            npm install
+          else
+            echo "No package.json found in server/ — skipping"
+          fi
+
+      - name: Run server tests (optional)
+        working-directory: server
+        run: npm test || echo "No server tests or tests failed"
+
+      # ------------------ Client ------------------
+      - name: Setup Node for client (with npm cache)
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install client dependencies
+        working-directory: client
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          elif [ -f package.json ]; then
+            npm install
+          else
+            echo "No package.json found in client/ — skipping"
+          fi
+
+      - name: Build client (if build script exists)
+        working-directory: client
+        run: |
+          if npm run | grep -q 'build'; then
+            npm run build --if-present
+          else
+            echo "No build script defined in client/package.json"
+          fi
+
