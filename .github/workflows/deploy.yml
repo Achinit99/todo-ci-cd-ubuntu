@@ -1,0 +1,38 @@
+name: Deploy Full-Stack App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.x'
+
+      - name: Install and build server
+        working-directory: ./server
+        run: |
+          npm install
+          npm run build
+
+      - name: Install and build client
+        working-directory: ./client
+        run: |
+          npm install
+          npm run build
+        env:
+          REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
+
+      - name: Deploy to production server
+        run: |
+          echo "Deploying..."
+          # You might use scp/rsync/docker-compose/ssh commands here
