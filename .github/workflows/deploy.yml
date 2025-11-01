@@ -17,13 +17,15 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '22.x'
-
-      - name: Install and build server
+          
+ # Install backend dependencies (No build step)
+      - name: Install server dependencies
         working-directory: ./server
         run: |
           npm install
           npm run build
-
+          
+ # Install and build frontend
       - name: Install and build client
         working-directory: ./client
         run: |
