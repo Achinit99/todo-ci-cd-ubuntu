@@ -7,6 +7,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
+      - name: Say Hello
+        run: echo "Hello GitHub Actions & Marketplace"
        with: 
       node-version: '22'
   - run: node --version
