@@ -25,7 +25,7 @@ jobs:
         uses: Truongnh1992/gemini-ai-code-reviewer@main
         with:
           GITHUB_TOKEN: ${{ secrets.LOCAL_KEY }}
-          GEMINI_API_KEY: ${{ secrets.API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MODEL: gemini-1.5-flash  # or your preferred model
    
   build-and-deploy:
