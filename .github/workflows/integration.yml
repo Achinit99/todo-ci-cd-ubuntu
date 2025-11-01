@@ -22,10 +22,9 @@ jobs:
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+        node-version: 22
     - name: "Installing Dependencies"
-      run: npm i
+      run: npm install
 
     - name: "Build command"
       run: npm run build
