@@ -41,6 +41,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '22.x'
+          cache: 'npm' #Add
+          cache-dependency-path: |
+            client/package-lock.json
+            server/package-lock.json
 
       # Install backend dependencies (No build step)
       - name: Install server dependencies
