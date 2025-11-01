@@ -1,13 +1,36 @@
 name: Deploy Full-Stack App
 
 on:
+  pull_request:
+    branches:
+      - main
   push:
     branches:
       - main
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
-  build-and-deploy:
+  gemini-code-review:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Run Gemini Code Review
+        uses: Truongnh1992/gemini-ai-code-reviewer@main
+        with:
+          GEMINI_API_KEY: ${{ secrets.API_KEY }}
+          GEMINI_MODEL: gemini-1.5-flash  # or your preferred model
+   
+  build-and-deploy:
+    needs: gemini-code-review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'  # only deploy on push, not PR
 
     steps:
       - name: Checkout code
@@ -17,14 +40,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '22.x'
-          
- # Install backend dependencies (No build step)
+
+      # Install backend dependencies (No build step)
       - name: Install server dependencies
         working-directory: ./server
         run: |
           npm install
-          
- # Install and build frontend
+
+      # Install and build frontend
       - name: Install and build client
         working-directory: ./client
         run: |
