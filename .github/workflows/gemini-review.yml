@@ -24,7 +24,7 @@ jobs:
       - name: Gemini AI Code Review
         uses: Truongnh1992/gemini-ai-code-reviewer@main
         env:
-          GITHUB_TOKEN: ${{ secrets.LOCAL_KEY }}
+          LOCAL_KEY: ${{ secrets.LOCAL_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_SHA: ${{ github.event.issue.pull_request.head.sha }}
