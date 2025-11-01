@@ -1,5 +1,4 @@
-
-name: Integration
+name: CI — Build & Test
 
 on:
   push:
@@ -7,24 +6,40 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  NODE_VERSION: 22.x
+
 jobs:
   build:
-
+    name: Install, Test & Build
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: 22
-    - name: "Installing Dependencies"
-      run: npm install
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: "Build command"
-      run: npm run build
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        # Use npm ci for reproducible installs if package-lock.json exists
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Run tests (if present)
+        run: npm test --if-present
+
+      - name: Build production bundle
+        run: npm run build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: todo-build
+          path: build
