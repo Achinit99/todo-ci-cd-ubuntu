@@ -1,27 +1,27 @@
-name: Gemini Code Review
+# name: Gemini Code Review
 
-on:
-  issue_comment:
-    types: [created]
+# on:
+#   issue_comment:
+#     types: [created]
 
-jobs:
-  review:
-    runs-on: ubuntu-latest
-    if: ${{ github.event.issue.pull_request }} # Only run on PR comments
-    steps:
-      - uses: actions/checkout@v4
+# jobs:
+#   review:
+#     runs-on: ubuntu-latest
+#     if: ${{ github.event.issue.pull_request }} # Only run on PR comments
+#     steps:
+#       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.x"
+#       - name: Set up Python
+#         uses: actions/setup-python@v4
+#         with:
+#           python-version: "3.x"
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
+#       - name: Install dependencies
+#         run: |
+#           python -m pip install --upgrade pip
 
-      - name: Run Gemini Code Reviewer
-        uses: Truongnh1992/gemini-ai-code-reviewer@main
-        env:
-          GITHUB_TOKEN: ${{ secrets.LOCAL_KEY }}  # replace with your token
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+#       - name: Run Gemini Code Reviewer
+#         uses: Truongnh1992/gemini-ai-code-reviewer@main
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.LOCAL_KEY }}  # replace with your token
+#           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
