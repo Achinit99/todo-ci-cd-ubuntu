@@ -29,7 +29,8 @@ jobs:
           APP_DIR: ${{ secrets.APP_DIR }}
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} 'bash -s' < ./scripts/deploy.sh
-
+      - run: pm2 restart todo-backend
+        
 ###################################################
 # name: Deploy Full-Stack App
 
