@@ -1,11 +1,27 @@
-# 🚀 Full-Stack ToDo App Deployment using CI/CD on Ubuntu VM
+# 📝 Todo App – Full Stack CI/CD Deployment on AWS EC2
 
-This project shows how to **build, deploy, and automate** a full-stack ToDo application using:
-- **Frontend:** React.js  
-- **Backend:** Node.js + Express  
-- **Server:** Ubuntu VM  
-- **CI/CD:** GitHub Actions  
-
-You’ll learn how to manually deploy your app first, and then automate it with a CI/CD pipeline.
+This project is a **Full-Stack Todo Application** built with **React (frontend)** and **Node.js + Express (backend)**.  
+It demonstrates a **real-world CI/CD pipeline** using **GitHub Actions**, deploying automatically to an **AWS EC2 Ubuntu instance** via **Nginx** and **PM2**.
 
 ---
+
+## 🚀 Features
+
+✅ Add, view, and delete todo tasks  
+✅ RESTful API built with Node.js + Express  
+✅ CI/CD with GitHub Actions  
+✅ Reverse proxy setup via Nginx  
+✅ Persistent backend process using PM2  
+✅ Deployed on AWS EC2 (Ubuntu)
+
+---
+
+## 🧩 Tech Stack
+
+**Frontend:** React.js  
+**Backend:** Node.js + Express  
+**Server:** AWS EC2 (Ubuntu 22.04)  
+**Process Manager:** PM2  
+**Reverse Proxy:** Nginx  
+**CI/CD:** GitHub Actions
+
