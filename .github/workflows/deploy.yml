@@ -1,67 +1,100 @@
-name: Deploy Full-Stack App
+name: CI/CD Deploy to EC2
 
 on:
-  pull_request:
-    branches:
-      - main
   push:
     branches:
       - main
 
-permissions:
-  contents: read
-  pull-requests: write
-
 jobs:
-  gemini-code-review:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      # - name: Run Gemini Code Review
-      #   uses: Truongnh1992/gemini-ai-code-reviewer@main
-      #   with:
-      #     GITHUB_TOKEN: ${{ secrets.LOCAL_KEY }}
-      #     GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      #     GEMINI_MODEL: gemini-1.5-flash  # or your preferred model
-   
   build-and-deploy:
-    needs: gemini-code-review
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'  # only deploy on push, not PR
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '22.x'
-          cache: 'npm' #Add
-          cache-dependency-path: |
-            client/package-lock.json
-            server/package-lock.json
+      # optional: run tests, linters, etc. Add steps here.
 
-      # Install backend dependencies (No build step)
-      - name: Install server dependencies
-        working-directory: ./server
+      - name: Copy private key for SSH
         run: |
-          npm install
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
 
-      # Install and build frontend
-      - name: Install and build client
-        working-directory: ./client
+      - name: Add host to known_hosts (avoid SSH prompt)
         run: |
-          npm install
-          npm run build
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts || true
+
+      - name: Run deploy script on EC2 via SSH
         env:
-          REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
-
-      - name: Deploy to production server
+          APP_DIR: ${{ secrets.APP_DIR }}
         run: |
-          echo "Deploying..."
-          # You might use scp/rsync/docker-compose/ssh commands here
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} 'bash -s' < ./scripts/deploy.sh
+
+###################################################
+# name: Deploy Full-Stack App
+
+# on:
+#   pull_request:
+#     branches:
+#       - main
+#   push:
+#     branches:
+#       - main
+
+# permissions:
+#   contents: read
+#   pull-requests: write
+
+# jobs:
+#   gemini-code-review:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+#         with:
+#           fetch-depth: 0
+
+#       # - name: Run Gemini Code Review
+#       #   uses: Truongnh1992/gemini-ai-code-reviewer@main
+#       #   with:
+#       #     GITHUB_TOKEN: ${{ secrets.LOCAL_KEY }}
+#       #     GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+#       #     GEMINI_MODEL: gemini-1.5-flash  # or your preferred model
+   
+#   build-and-deploy:
+#     needs: gemini-code-review
+#     runs-on: ubuntu-latest
+#     if: github.event_name == 'push'  # only deploy on push, not PR
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: '22.x'
+#           cache: 'npm' #Add
+#           cache-dependency-path: |
+#             client/package-lock.json
+#             server/package-lock.json
+
+#       # Install backend dependencies (No build step)
+#       - name: Install server dependencies
+#         working-directory: ./server
+#         run: |
+#           npm install
+
+#       # Install and build frontend
+#       - name: Install and build client
+#         working-directory: ./client
+#         run: |
+#           npm install
+#           npm run build
+#         env:
+#           REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
+
+#       - name: Deploy to production server
+#         run: |
+#           echo "Deploying..."
+#           # You might use scp/rsync/docker-compose/ssh commands here
