@@ -30,7 +30,7 @@ It demonstrates a **real-world CI/CD pipeline** using **GitHub Actions**, deploy
 ## 🛠️ Local Setup
 
 ### 1️⃣ Clone the repo
-git clone https://github.com/<YOUR_USERNAME>/todo-ci-cd-ubuntu.git
+git clone https://github.com/achinit99/todo-ci-cd-ubuntu.git
 cd todo-ci-cd-ubuntu
 
 ## 2️⃣ Install dependencies
