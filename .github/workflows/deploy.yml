@@ -12,7 +12,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # optional: run tests, linters, etc. Add steps here.
+      # run tests, linters, etc. Add steps here.
 
       - name: Copy private key for SSH
         run: |
